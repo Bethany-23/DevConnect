@@ -60,3 +60,11 @@ exports.loginUser = async(req,res) =>{
         res.status(500).json({message: "Server error", error: err.message});
     }
 };
+
+
+exports.getMe = async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({ message: "User not found" });
+  }
+  res.status(200).json(req.user);
+};
