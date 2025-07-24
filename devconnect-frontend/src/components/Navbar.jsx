@@ -9,6 +9,7 @@ function Navbar(){
                 <Link to="/register" className="hover:text-orange-300">Register</Link>
                 <Link to="/login" className="hover:text-orange-300">Login</Link>
                 <Link to="/dashboard" className="hover:text-orange-300">Dashboard</Link>
+                <Link to="/profile" className="hover:text-orange-300">Profile</Link>
             </div>
         </nav>
     );
