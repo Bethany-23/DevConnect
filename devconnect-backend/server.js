@@ -9,10 +9,12 @@ dotenv.config();
 connectDB();
 
 const app = express();
+const postRoutes = require("./routes/postRoutes");
 
 app.use(cors());
 app.use(express.json());
 app.use("/api/auth", authRoutes);
+app.use("/api/posts", postRoutes);
 
 app.get("/", (req,res)=>{
     res.send("API is running ...")
