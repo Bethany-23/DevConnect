@@ -40,25 +40,22 @@ exports.getPostById = async(req, res) =>{
     }
 };
 
-// update post 
+// PUT (Edit)
+export const updatePost = async (req, res) => {
+  const { title, content } = req.body;
+  const post = await Post.findById(req.params.id);
 
-exports.updatePost = async(req, res) =>{
-    try{
-        const post = await Post.findById(req.params.id);
-        if (!post) return res.status(404).json({message: "Post not found"});
+  if (!post) return res.status(404).json({ message: "Post not found" });
 
-        // check if user is author
-        if (post.author.toString() !== req.user._id.toString()){
-            return res.status(403).json({message: "Not authorized to update this post"});
-        }
-        post.title = req.body.title || post.title;
-        post.content = req.body.content || post.content;
+  if (post.author.toString() !== req.user.id) {
+    return res.status(403).json({ message: "Not authorized" });
+  }
 
-        const updatedPost= await post.save();
-        res.json(updatedPost);
-    }catch(err){
-        res.status(500).json({message: err.message});
-    }
+  post.title = title || post.title;
+  post.content = content || post.content;
+  await post.save();
+
+  res.json(post);
 };
 
 // DELETE
