@@ -1,53 +1,47 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import API from "../utils/axios";
 
-import {useEffect, useState} from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+const Profile = () => {
+  const { userId } = useParams();
+  const [userPosts, setUserPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [userName, setUserName] = useState("");
 
-const Profile = () =>{
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
+  useEffect(() => {
+    const fetchUserPosts = async () => {
+      try {
+        const res = await API.get(`/posts/user/${userId}`);
+        setUserPosts(res.data);
+        if (res.data.length > 0) {
+          setUserName(res.data[0].author.name);
+        }
+      } catch (err) {
+        console.error("Error fetching user posts");
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    useEffect(()=>{
-        const fetchUser = async () =>{
-            const token = localStorage.getItem("token");
+    fetchUserPosts();
+  }, [userId]);
 
-            if (!token){
-                navigate("/login");
-                return;
-            }
-
-            try{
-                const res = await axios.get("http://localhost:5000/api/auth/me", {
-                    headers:{
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                setUser(res.data)
-            }catch(error){
-                setError("You must be logged in to view this page.");
-                localStorage.removeItem("token");
-                navigate("/login")
-            }finally{
-                setLoading(false);
-            }
-        };
-        fetchUser();
-    },[]);
-    if (loading) return <p className="text-center mt-10">Loading...</p>;
-    if(error) return <p className="text-center mt-10 text-red-500">{error}</p>;
-
-    return(
-        <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-            <h1 className="text-2xl font-bold mb-4 text-center">Your Profile</h1>
-            <div className="space-y-2">
-                <p><strong>Name:</strong>{user.name}</p>
-                <p><strong>Email</strong>{user.email}</p>
-                <p><strong>ID:</strong>{user.id}</p>
-            </div>
-        </div>
-    );
+  return (
+    <div className="max-w-2xl mx-auto mt-10 px-4">
+      <h1 className="text-3xl font-bold mb-6">Posts by {userName}</h1>
+      {loading ? <p>Loading...</p> : userPosts.length === 0 ? <p>No posts yet.</p> : (
+        userPosts.map((post) => (
+          <div key={post._id} className="mb-6 p-5 bg-white rounded-lg shadow">
+            <h2 className="text-xl font-semibold">{post.title}</h2>
+            <p className="text-gray-600 mt-2">{post.content}</p>
+            <p className="text-sm text-gray-400 mt-4">
+              {new Date(post.createdAt).toLocaleString()}
+            </p>
+          </div>
+        ))
+      )}
+    </div>
+  );
 };
 
 export default Profile;
