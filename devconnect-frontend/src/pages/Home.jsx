@@ -32,15 +32,34 @@ const Home = () =>{
     {error && <p className="text-red-500">{error}</p>}
 
     {posts.map((post) => (
-      <div key={post._id} className="mb-6 p-5 bg-white rounded-lg shadow">
-        <h2 className="text-xl font-semibold">{post.title}</h2>
-        <p className="text-gray-600 mt-2">{post.content}</p>
-        <p className="text-sm text-gray-400 mt-4">
-          By {post.author?.name || "Unknown"} •{" "}
-          {new Date(post.createdAt).toLocaleString()}
-        </p>
+  <div key={post._id} className="mb-6 p-5 bg-white rounded-lg shadow">
+    <h2 className="text-xl font-semibold">{post.title}</h2>
+    <p className="text-gray-600 mt-2">{post.content}</p>
+    <p className="text-sm text-gray-400 mt-4">
+      By {post.author?.name || "Unknown"} •{" "}
+      {new Date(post.createdAt).toLocaleString()}
+    </p>
+
+    {/* Show delete/edit if current user is author */}
+    {post.author?._id === user._id && (
+      <div className="mt-2 flex gap-4">
+        <button
+          onClick={() => handleDelete(post._id)}
+          className="text-red-500 hover:underline"
+        >
+          Delete
+        </button>
+        <button
+          onClick={() => startEdit(post)}
+          className="text-blue-500 hover:underline"
+        >
+          Edit
+        </button>
       </div>
-    ))}
+    )}
+  </div>
+))}
+
   </div>
 );
 
