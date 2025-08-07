@@ -20,4 +20,14 @@ router.route("/:id")
 .put(protect,updatePost)
 .delete(protect, deletePost);
 
+router.get("/user/:userId", async (req, res) => {
+  try {
+    const posts = await Post.find({ author: req.params.userId }).populate("author", "name");
+    res.json(posts);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching user posts" });
+  }
+});
+
+
 module.exports = router;
